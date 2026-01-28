@@ -1,10 +1,10 @@
-# 🥦 Coletor de Dados da TBCA
+# Coletor de Dados da TBCA
 
-**scrape_tbca.py** é um script em Python que realiza a extração automatizada dos dados da [Tabela Brasileira de Composição de Alimentos (TBCA)](https://www.tbca.net.br), consolidando todas as informações em um único arquivo Excel.
+**scrape_tbca.py** é um script em Python que realiza a extração automatizada dos dados da [Tabela Brasileira de Composição de Alimentos (TBCA)](https://www.tbca.net.br), consolidando todas as informações em um único arquivo Excel. Utilizado para a criação de banco de dados na Graduação em Sistemas de Informação PUC-Minas, alimentando aplicação desenvolvida para cálculo de valores nutricionais das refeições. 
 
 ---
 
-## 📋 Visão Geral
+## Visão Geral
 
 O script percorre todas as páginas da base de dados da TBCA, coleta as tabelas de composição de alimentos e exporta o resultado final limpo para:
 tabela_composicao_alimentos_completa.xlsx
@@ -13,7 +13,7 @@ A coleta é feita utilizando as bibliotecas `requests` e `BeautifulSoup` para o 
 
 ---
 
-## ⚙️ Funcionalidades
+## Funcionalidades
 
 - Coleta automática de todas as páginas da TBCA  
 - Identificação de paginação e prevenção de duplicatas  
@@ -22,7 +22,7 @@ A coleta é feita utilizando as bibliotecas `requests` e `BeautifulSoup` para o 
 
 ---
 
-## 🧠 Requisitos
+## Requisitos
 
 - Python 3.8 ou superior  
 - Bibliotecas:
