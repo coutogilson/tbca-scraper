@@ -97,11 +97,14 @@ python scrape_tbca.py --from-html-dir cache_tbca --out testes.xlsx
 | `--limit` | `0` (todos) | processa somente os N primeiros alimentos |
 | `--delay` | `1.0` | intervalo entre requisições de cada worker, em segundos |
 | `--workers` | `2` | requisições simultâneas |
+| `--listing-delay` | `0.3` | intervalo entre as páginas da listagem |
 | `--retries` | `3` | tentativas por página, com backoff exponencial |
 | `--no-cache` / `--no-json` | — | desliga o cache local de HTML / a saída JSON |
 | `--force` | — | ignora cache de HTML e de JSON e baixa tudo novamente |
 
-A coleta completa da TBCA passa de 5.800 alimentos: com os padrões (`--workers 2 --delay 1.0`) leva cerca de 45 a 50 minutos. Para retomar depois de uma interrupção, basta rodar de novo: o que já foi coletado é lido do JSON e não é baixado outra vez.
+A listagem da TBCA tem 100 alimentos por página, 59 páginas e **5.875 alimentos** no total. O site pagina em dois níveis (`?pagina=N&atuald=B`, com a virada de bloco no link "Próxima"), então a coleta segue o "Próxima" de cada página em vez de montar as URLs por conta própria.
+
+Com os padrões (`--workers 2 --delay 1.0`) a coleta completa leva cerca de 45 a 50 minutos; com `--workers 4 --delay 0.5`, cerca de 25 a 30. Para retomar depois de uma interrupção, basta rodar de novo: o que já foi coletado é lido do JSON e não é baixado outra vez.
 
 ---
 
@@ -163,7 +166,7 @@ python tests/test_parsing.py
 python -m pytest tests -q
 ```
 
-Eles cobrem a conversão de valores (`tr`, `NA`, vírgula decimal, asterisco da fonte), a leitura dos cabeçalhos de medidas caseiras, o casamento entre a listagem e os links de composição, a geração da planilha e do JSON, e o reaproveitamento do JSON como cache.
+Eles cobrem a conversão de valores (`tr`, `NA`, vírgula decimal, asterisco da fonte), a leitura dos cabeçalhos de medidas caseiras, a paginação da listagem (inclusive a virada de bloco `atuald`), o casamento entre a listagem e os links de composição, a geração da planilha e do JSON, e o reaproveitamento do JSON como cache.
 
 ---
 

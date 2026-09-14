@@ -1,0 +1,75 @@
+[1/3] Lendo a listagem: https://www.tbca.net.br/base-dados/composicao_alimentos.php
+      página 1/10: 100 alimentos.
+      página 10/10 do bloco: 1000 alimentos acumulados.
+      página 20/20 do bloco: 2000 alimentos acumulados.
+      página 30/30 do bloco: 3000 alimentos acumulados.
+      página 40/40 do bloco: 4000 alimentos acumulados.
+      página 50/50 do bloco: 5000 alimentos acumulados.
+      página 59/59 do bloco: 5875 alimentos acumulados.
+      5875 alimentos encontrados (5875 com link de composição).
+[2/3] Baixando composição de 5875 alimentos (workers=4, delay=0.5s, cache=cache_tbca)
+      100/5875 processados (100 ok, 100 do JSON existente, 0 com problema)
+      200/5875 processados (200 ok, 200 do JSON existente, 0 com problema)
+      300/5875 processados (300 ok, 247 do JSON existente, 0 com problema)
+      400/5875 processados (400 ok, 247 do JSON existente, 0 com problema)
+      500/5875 processados (500 ok, 247 do JSON existente, 0 com problema)
+      600/5875 processados (600 ok, 247 do JSON existente, 0 com problema)
+      700/5875 processados (700 ok, 247 do JSON existente, 0 com problema)
+      800/5875 processados (800 ok, 247 do JSON existente, 0 com problema)
+      900/5875 processados (900 ok, 247 do JSON existente, 0 com problema)
+      1000/5875 processados (1000 ok, 250 do JSON existente, 0 com problema)
+      1100/5875 processados (1100 ok, 347 do JSON existente, 0 com problema)
+      1200/5875 processados (1200 ok, 347 do JSON existente, 0 com problema)
+      1300/5875 processados (1300 ok, 347 do JSON existente, 0 com problema)
+      1400/5875 processados (1400 ok, 347 do JSON existente, 0 com problema)
+      1500/5875 processados (1500 ok, 347 do JSON existente, 0 com problema)
+      1600/5875 processados (1600 ok, 347 do JSON existente, 0 com problema)
+      1700/5875 processados (1700 ok, 347 do JSON existente, 0 com problema)
+      1800/5875 processados (1800 ok, 347 do JSON existente, 0 com problema)
+      1900/5875 processados (1900 ok, 347 do JSON existente, 0 com problema)
+      2000/5875 processados (2000 ok, 347 do JSON existente, 0 com problema)
+      2100/5875 processados (2100 ok, 347 do JSON existente, 0 com problema)
+      2200/5875 processados (2200 ok, 347 do JSON existente, 0 com problema)
+      2300/5875 processados (2300 ok, 347 do JSON existente, 0 com problema)
+      2400/5875 processados (2400 ok, 347 do JSON existente, 0 com problema)
+      2500/5875 processados (2500 ok, 347 do JSON existente, 0 com problema)
+      2600/5875 processados (2600 ok, 347 do JSON existente, 0 com problema)
+      2700/5875 processados (2700 ok, 347 do JSON existente, 0 com problema)
+      2800/5875 processados (2800 ok, 347 do JSON existente, 0 com problema)
+      2900/5875 processados (2900 ok, 347 do JSON existente, 0 com problema)
+      3000/5875 processados (3000 ok, 347 do JSON existente, 0 com problema)
+      3100/5875 processados (3100 ok, 347 do JSON existente, 0 com problema)
+      3200/5875 processados (3200 ok, 347 do JSON existente, 0 com problema)
+      3300/5875 processados (3300 ok, 347 do JSON existente, 0 com problema)
+      3400/5875 processados (3400 ok, 347 do JSON existente, 0 com problema)
+      3500/5875 processados (3500 ok, 347 do JSON existente, 0 com problema)
+      3600/5875 processados (3600 ok, 347 do JSON existente, 0 com problema)
+      3700/5875 processados (3700 ok, 347 do JSON existente, 0 com problema)
+      3800/5875 processados (3800 ok, 347 do JSON existente, 0 com problema)
+      3900/5875 processados (3900 ok, 347 do JSON existente, 0 com problema)
+      4000/5875 processados (4000 ok, 347 do JSON existente, 0 com problema)
+      4100/5875 processados (4100 ok, 347 do JSON existente, 0 com problema)
+      4200/5875 processados (4200 ok, 347 do JSON existente, 0 com problema)
+      4300/5875 processados (4300 ok, 347 do JSON existente, 0 com problema)
+      4400/5875 processados (4400 ok, 347 do JSON existente, 0 com problema)
+      4500/5875 processados (4500 ok, 347 do JSON existente, 0 com problema)
+      4600/5875 processados (4600 ok, 347 do JSON existente, 0 com problema)
+      4700/5875 processados (4700 ok, 347 do JSON existente, 0 com problema)
+      4800/5875 processados (4800 ok, 347 do JSON existente, 0 com problema)
+      4900/5875 processados (4900 ok, 347 do JSON existente, 0 com problema)
+      [AVISO] BRC0373B: tabela de composição sem linhas de nutrientes
+      5000/5875 processados (4999 ok, 347 do JSON existente, 1 com problema)
+      5100/5875 processados (5099 ok, 347 do JSON existente, 1 com problema)
+      5200/5875 processados (5199 ok, 347 do JSON existente, 1 com problema)
+      5300/5875 processados (5299 ok, 347 do JSON existente, 1 com problema)
+      5400/5875 processados (5399 ok, 347 do JSON existente, 1 com problema)
+      5500/5875 processados (5499 ok, 347 do JSON existente, 1 com problema)
+      5600/5875 processados (5599 ok, 347 do JSON existente, 1 com problema)
+      5700/5875 processados (5699 ok, 347 do JSON existente, 1 com problema)
+      5800/5875 processados (5799 ok, 347 do JSON existente, 1 com problema)
+      5875/5875 processados (5874 ok, 347 do JSON existente, 1 com problema)
+[3/3] Gravando 'tabela_composicao_alimentos_completa.xlsx'
+[OK] 5875 alimentos | 241060 linhas de nutrientes | 310408 linhas de medidas caseiras | 1 problemas
+      JSON individual: 5874 arquivos em dados_tbca
+[3/3] Gravando JSON em 'dados_tbca'
+      JSON completo: dados_tbca\db.json (5875 alimentos)

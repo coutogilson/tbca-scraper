@@ -411,6 +411,10 @@ def find_next_pages(soup: BeautifulSoup, page_url: str) -> list[str]:
 _PAGINA_INFO_RE = re.compile(r"Exibindo\s*p(?:&aacute;|á|a|&#225;)gina\s*(\d+)\s*de\s*(\d+)", re.I)
 _PAGINA_LINK_RE = re.compile(r"pagina=(\d+)")
 
+# Trava de segurança: a listagem tem ~59 páginas; se o site entrar em laço, a
+# coleta para aqui em vez de baixar indefinidamente.
+MAX_LISTING_PAGES = 300
+
 
 def parse_pagination_info(html: str) -> dict[str, Any]:
     """
@@ -689,15 +693,50 @@ def parse_detail_page(html: str, url: str, codigo: str, settings: Settings) -> d
 
 # --- COLETA ---
 
+def find_next_page_url(soup: BeautifulSoup, page_url: str, pagina_atual: int) -> str | None:
+    """
+    Descobre a URL da próxima página da listagem.
+
+    A paginação da TBCA tem dois níveis ('?pagina=N&atuald=B', 100 alimentos por
+    página, 10 páginas por bloco) e o "Próxima" é quem faz a virada de bloco
+    (página 10 -> '?pagina=11&atuald=2'). Por isso a próxima página é lida da
+    própria página, e não calculada por fórmula: assim a coleta acompanha o site
+    mesmo que o tamanho do bloco mude.
+
+    Prefere o link com o texto "próxima"; sem ele, cai para o menor número de
+    página maior que o atual (link numérico). Devolve None na última página.
+    """
+    candidatos: list[tuple[bool, int, str]] = []
+    for anchor in soup.find_all("a", href=True):
+        href = anchor["href"]
+        if "composicao_alimentos.php" not in href:
+            continue
+        numero = _PAGINA_LINK_RE.search(href)
+        if not numero:
+            continue
+        pagina = int(numero.group(1))
+        texto = clean_text(anchor.get_text(" ", strip=True)).lower()
+        eh_proxima = any(token in texto for token in ("próxima", "proxima", "next", "»"))
+        candidatos.append((eh_proxima, pagina, urljoin(page_url, href)))
+
+    for eh_proxima, _, url in candidatos:
+        if eh_proxima:
+            return url
+
+    seguintes = [(pagina, url) for _, pagina, url in candidatos if pagina > pagina_atual]
+    if seguintes:
+        return min(seguintes, key=lambda item: item[0])[1]
+    return None
+
+
 def collect_foods(session: requests.Session, settings: Settings) -> list[dict[str, Any]]:
     """
     Baixa todas as páginas da listagem e devolve os alimentos com a URL da
     página de composição de cada um.
 
-    A listagem é paginada em blocos de 10 páginas ('?pagina=N&atuald=B'), com 100
-    alimentos por página. Em vez de seguir os links visíveis (que só cobrem o
-    bloco atual), o total de páginas é lido do próprio HTML ("Exibindo página 1
-    de 59") e as páginas são percorridas até o fim.
+    A listagem tem 100 alimentos por página e mais de 5.800 no total; as páginas
+    são percorridas seguindo o link "Próxima" de cada uma, avançando pelos
+    blocos ('atuald') até a última página.
     """
     print(f"[1/3] Lendo a listagem: {settings.listing_url}")
     html = fetch_html(session, settings.listing_url, settings)
@@ -709,55 +748,47 @@ def collect_foods(session: requests.Session, settings: Settings) -> list[dict[st
     if not foods:
         raise SystemExit("ERRO: nenhum alimento encontrado na listagem (o layout do site pode ter mudado).")
 
-    info = parse_pagination_info(html)
-    total_paginas = max(info["total"], 1)
-    print(f"      página 1/{total_paginas}: {len(foods)} alimentos.")
-
     vistos = {food["codigo"] or food["url"] for food in foods}
+    info = parse_pagination_info(html)
+    print(f"      página 1/{info['total']}: {len(foods)} alimentos.")
+
     pagina = 1
-    while pagina < total_paginas:
-        pagina += 1
-        bloco = (pagina - 1) // max(info["tamanho_bloco"], 1) + 1
-        page_url = listing_page_url(settings.listing_url, pagina, bloco)
+    page_url = settings.listing_url
+    while pagina < MAX_LISTING_PAGES:
+        proxima = find_next_page_url(soup, page_url, pagina)
+        if not proxima:
+            break
         time.sleep(settings.listing_delay)
-
-        page_html = fetch_html(session, page_url, settings)
+        page_html = fetch_html(session, proxima, settings)
         if page_html is None:
-            continue
+            break
 
-        page_info = parse_pagination_info(page_html)
-        if page_info["atual"] != pagina:
-            # O bloco não avançou como esperado: recalcula usando o que a página
-            # devolveu, em vez de insistir na mesma URL.
-            settings.report("", page_url,
-                            f"paginação inesperada: pedi a página {pagina}, o site respondeu "
-                            f"{page_info['atual']} de {page_info['total']}")
-            if page_info["atual"] < pagina:
-                break
-
-        soup_pagina = BeautifulSoup(page_html, "html.parser")
-        encontrados = discover_foods(soup_pagina, page_url, settings)
+        soup = BeautifulSoup(page_html, "html.parser")
+        encontrados = discover_foods(soup, proxima, settings)
         if not encontrados:
             encontrados = [
                 {"codigo": link["codigo"], "nome": "", "nome_cientifico": "", "grupo": "",
                  "marca": "", "url": link["url"]}
-                for link in extract_detail_links(soup_pagina, page_url)
+                for link in extract_detail_links(soup, proxima)
             ]
-        novos = []
+        if not encontrados:
+            print(f"      página {pagina + 1} sem alimentos: encerrando a paginação.")
+            break
+
+        novos = 0
         for food in encontrados:
             chave = food["codigo"] or food["url"]
             if chave in vistos:
                 continue
             vistos.add(chave)
-            novos.append(food)
+            foods.append(food)
+            novos += 1
 
-        if novos:
-            foods.extend(novos)
-        if pagina % 10 == 0 or pagina == total_paginas:
-            print(f"      página {pagina}/{total_paginas}: {len(foods)} alimentos acumulados.")
-        if not encontrados:
-            print(f"      página {pagina} sem alimentos: encerrando a paginação.")
-            break
+        pagina += 1
+        page_url = proxima
+        info = parse_pagination_info(page_html)
+        if pagina % 10 == 0 or novos == 0 or not find_next_page_url(soup, page_url, pagina):
+            print(f"      página {pagina}/{info['total']} do bloco: {len(foods)} alimentos acumulados.")
 
     sem_link = sum(1 for food in foods if not food["url"])
     print(f"      {len(foods)} alimentos encontrados ({len(foods) - sem_link} com link de composição).")
@@ -1211,6 +1242,39 @@ def export(frames: dict[str, pd.DataFrame], settings: Settings) -> None:
 
 # --- FLUXOS DE EXECUÇÃO ---
 
+def tratar_json_orfaos(foods: Sequence[dict[str, Any]], settings: Settings) -> None:
+    """
+    Move para 'orfaos/' os JSON que não correspondem a nenhum alimento da
+    listagem atual.
+
+    Sem isso, um arquivo de uma execução antiga (ou de um teste com --limit)
+    continuaria na pasta e poderia ser carregado pela aplicação como se fosse
+    dado válido.
+    """
+    if settings.json_dir is None:
+        return
+    pasta = Path(settings.json_dir)
+    if not pasta.exists():
+        return
+
+    esperados = {f"{food['codigo']}.json" for food in foods if food["codigo"]}
+    orfaos = [
+        arquivo for arquivo in pasta.glob("*.json")
+        if arquivo.name != "db.json" and arquivo.name not in esperados
+    ]
+    if not orfaos:
+        return
+
+    destino = pasta / "orfaos"
+    destino.mkdir(parents=True, exist_ok=True)
+    for arquivo in orfaos:
+        try:
+            arquivo.replace(destino / arquivo.name)
+        except OSError as exc:  # pragma: no cover - proteção de robustez
+            settings.report(arquivo.stem, "", f"não foi possível mover JSON órfão: {exc}")
+    print(f"      {len(orfaos)} JSON fora da listagem movidos para {destino}")
+
+
 def escrever_json_por_alimento(foods: Sequence[dict[str, Any]],
                                detalhes: dict[str, dict[str, Any]],
                                settings: Settings) -> None:
@@ -1244,6 +1308,7 @@ def persistir(frames: dict[str, pd.DataFrame], settings: Settings,
         export(frames, settings)
     if settings.formatos in ("ambos", "json"):
         if foods is not None and detalhes is not None:
+            tratar_json_orfaos(foods, settings)
             escrever_json_por_alimento(foods, detalhes, settings)
         print(f"[3/3] Gravando JSON em '{settings.json_dir}'")
         escrever_json_completo(frames, settings)
