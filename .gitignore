@@ -1,0 +1,15 @@
+# cache local do HTML e saídas geradas
+cache_tbca/
+dados_tbca/
+.tmp_tests/
+
+# arquivos de teste/execução
+testes.xlsx
+~$*.xlsx
+
+# python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+/.dsh
