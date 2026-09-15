@@ -19,6 +19,7 @@ Saídas:
 | `tabela_composicao_alimentos_completa.xlsx` | planilha com 6 abas: `Resumo`, `Alimentos`, `Nutrientes_100g`, `Nutrientes`, `Medidas`, `Problemas` |
 | `dados_tbca/<CÓDIGO>.json` | um arquivo por alimento, com `por_100g`, `componentes` (valor + status) e `medidas` |
 | `dados_tbca/db.json` | todos os alimentos em um único JSON, para carga direta na aplicação |
+| `entrega_tbca/` | pacote de importação para outro projeto (Supabase/Postgres): 5 CSVs normalizados, o mesmo conteúdo em JSON, o schema SQL, os scripts de carga e a documentação de handoff. Gerado por `exportar_entrega.py` |
 
 A coleta usa `requests` e `BeautifulSoup` para o scraping, e `pandas` para tratamento e exportação dos dados.
 
@@ -153,6 +154,20 @@ Exemplo de JSON individual:
   ]
 }
 ```
+
+---
+
+## Pacote de entrega (`entrega_tbca/`)
+
+Para levar os dados a outro projeto (SaaS com Supabase/Postgres), `exportar_entrega.py` lê os JSONs de `dados_tbca/` e monta um pacote normalizado em cinco tabelas — `nutrients`, `foods`, `food_nutrients`, `measures`, `measure_nutrients`:
+
+```bash
+python exportar_entrega.py
+```
+
+Gera `entrega_tbca/csv/` e `entrega_tbca/json/` (os mesmos dados nos dois formatos) e o `json/manifest.json` com contagens, md5 e a lista de alertas da coleta. O schema SQL, os scripts de carga e a documentação de handoff ficam em `entrega_tbca/` e são mantidos à mão — o script não os apaga.
+
+O ponto de entrada para quem vai importar é `entrega_tbca/LEIA-ME.md`. Duas armadilhas do dado de origem estão documentadas lá e em `entrega_tbca/ANALISE-DOS-DADOS.md`: `measure_index` não é um catálogo global de medidas caseiras, e oito alimentos têm componente duplicado na coleta, o que exige a carga por estágio de `entrega_tbca/sql/03_deduplicar_food_nutrients.sql`.
 
 ---
 

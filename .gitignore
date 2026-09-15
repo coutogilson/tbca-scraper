@@ -3,9 +3,15 @@ cache_tbca/
 dados_tbca/
 .tmp_tests/
 
+# pacote de entrega: os dados são regerados por exportar_entrega.py
+# (108 MB); o que vale versionar é o script, o schema e a documentação.
+entrega_tbca/csv/
+entrega_tbca/json/
+
 # arquivos de teste/execução
 testes.xlsx
 ~$*.xlsx
+.tmp_*
 
 # python
 __pycache__/
