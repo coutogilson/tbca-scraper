@@ -173,11 +173,16 @@ O ponto de entrada para quem vai importar é `entrega_tbca/LEIA-ME.md`. Duas arm
 
 ## Testes
 
-Os testes rodam offline, contra páginas de exemplo salvas em `tests/samples`:
+Os testes rodam offline, contra páginas de exemplo salvas em `tests/samples`, sem precisar de rede:
 
 ```bash
 python tests/test_parsing.py
-# ou
+```
+
+O script de testes é autossuficiente e não exige o `pytest`. Se preferir a saída do pytest, instale-o à parte (ele não está no `requirements.txt`, que lista só as dependências de execução):
+
+```bash
+pip install pytest
 python -m pytest tests -q
 ```
 

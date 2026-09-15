@@ -12,10 +12,14 @@ entrega_tbca/json/
 testes.xlsx
 ~$*.xlsx
 .tmp_*
+*.log
 
 # python
 __pycache__/
 *.py[cod]
 .venv/
 venv/
+
+# estado local da ferramenta de desenvolvimento (memória, rollback, checkpoints)
 /.dsh
+/.dsh-meow
